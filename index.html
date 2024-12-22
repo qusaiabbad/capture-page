@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Image</title>
+</head>
+<body>
+    <h1>Capture an Image</h1>
+    <video id="video" autoplay></video>
+    <button id="capture">Capture Image</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <p id="message">Please capture the image and send it.</p>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const message = document.getElementById('message');
+        const context = canvas.getContext('2d');
+
+        // Request access to the camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                message.innerText = "Error accessing the camera: " + err.message;
+            });
+
+        // Capture the image when the button is clicked
+        captureButton.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert the image to a data URL
+            const imageData = canvas.toDataURL('image/png');
+
+            // Open WhatsApp to send the image (can be modified for email or server upload)
+            const encodedImage = encodeURIComponent(imageData);
+            const whatsappLink = `https://wa.me/+962782106818?text=Captured image data: ${encodedImage}`;
+            window.location.href = whatsappLink;
+        });
+    </script>
+</body>
+</html>
